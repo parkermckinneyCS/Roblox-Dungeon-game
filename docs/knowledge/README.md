@@ -4,6 +4,12 @@ This directory is the durable, Git-versioned memory for Dungeon Game. Read this 
 
 | File | Use it for |
 | --- | --- |
+| [`../README.md`](../README.md) | Technical knowledge index and future-agent start checklist |
+| [`../architecture.md`](../architecture.md) | Major systems, dependencies, state ownership, and lifecycle |
+| [`../networking.md`](../networking.md) | RemoteEvents, RemoteFunctions, bindables, callers, and handlers |
+| [`../instance-paths.md`](../instance-paths.md) | Important live Studio and runtime-created paths |
+| [`../conventions.md`](../conventions.md) | Identifier, data, animation, weapon, UI, and authority contracts |
+| [`../known-problems.md`](../known-problems.md) | Verified security risks, defects, limitations, and audit gaps |
 | [`project.md`](project.md) | Current project identity, verified structure, systems, and conventions |
 | [`asset-catalog.md`](asset-catalog.md) | UI and gameplay asset inventory |
 | [`decisions.md`](decisions.md) | Durable technical and product decisions |
@@ -14,6 +20,7 @@ This directory is the durable, Git-versioned memory for Dungeon Game. Read this 
 ## Maintenance rules
 
 - Prefer short, verified statements with paths or Studio instance names.
+- Treat the architecture documents one directory above as current-state references and update the affected document after Studio architecture changes.
 - Update current-state documents rather than appending duplicate facts.
 - Append decisions and work-log entries chronologically; supersede decisions explicitly.
 - Separate confirmed facts from assumptions and future plans.

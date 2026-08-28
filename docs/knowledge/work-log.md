@@ -1,5 +1,13 @@
 # Work log
 
+## 2026-08-28 — Read-only Studio architecture audit
+
+- Inspected Dungeon Game (`placeId: 118646628582446`) through Roblox Studio MCP in Edit mode without changing the game or starting a playtest.
+- Cataloged server/client entry points, services, configs, data ownership, 14 RemoteEvents, 6 RemoteFunctions, local bindables, important instance paths, runtime-created instances, asset contracts, and naming conventions.
+- Added the persistent technical knowledge base at `docs/README.md`, `docs/architecture.md`, `docs/networking.md`, `docs/instance-paths.md`, `docs/conventions.md`, and `docs/known-problems.md`.
+- Recorded critical release risks: an obfuscated dynamic server `require` in the imported `Maybedoor` model and unrestricted player-accessible development buttons.
+- Recorded confirmed gameplay/design gaps including unused configured stat/derived/defense modifiers, missing DataStore session locking, incomplete run lifecycle, and missing teleport failure recovery.
+
 ## 2026-08-28 — Project memory foundation
 
 - Added repository-wide Codex instructions in `AGENTS.md`.
