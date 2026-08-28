@@ -10,4 +10,4 @@ Roblox dungeon-game workspace connected to the Studio place **Dungeon Game** (`p
 
 ## GitHub status
 
-The local Git repository has an initial project commit but does not yet have a configured remote. See [`docs/knowledge/github.md`](docs/knowledge/github.md) for the remaining connection steps.
+This project is versioned at [`parkermckinneyCS/Roblox-Dungeon-game`](https://github.com/parkermckinneyCS/Roblox-Dungeon-game). See [`docs/knowledge/github.md`](docs/knowledge/github.md) for connection details.

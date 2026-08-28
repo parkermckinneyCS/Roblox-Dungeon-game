@@ -20,3 +20,9 @@ tmp/
 temp/
 *.log
 .codex-log/
+
+# Luau development output
+coverage.out
+profile.out
+profile.svg
+trace.json

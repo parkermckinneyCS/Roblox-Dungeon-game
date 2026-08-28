@@ -27,5 +27,5 @@ Last verified: 2026-08-28
 ## Known gaps
 
 - The Studio game hierarchy and scripts have not yet been cataloged in this repository.
-- The local repository has no GitHub remote yet.
+- The local repository is connected to `https://github.com/parkermckinneyCS/Roblox-Dungeon-game` as `origin`.
 - The asset upload/usage mapping between local PNGs and Roblox asset IDs has not been documented.
