@@ -1,0 +1,22 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Temporary and generated inspection output
+tmp/
+temp/
+*.log
+.codex-log/
