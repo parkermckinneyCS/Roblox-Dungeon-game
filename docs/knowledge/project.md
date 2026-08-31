@@ -1,6 +1,6 @@
 # Project snapshot
 
-Last verified: 2026-08-28
+Last verified: 2026-08-31
 
 ## Identity
 
@@ -26,6 +26,10 @@ Last verified: 2026-08-28
 - `ServerScriptService.LobbyMain` orchestrates data, lobby/run initialization, parties, inventory/stats, consumables, snapshots, autosave, and shutdown saves.
 - `ServerScriptService.CombatInputMain` is the server-authoritative combat/sheath remote gateway.
 - Server modules own player data, parties, run state, teleport queueing, mana, gear/appearance, combat loadouts, skills/hitboxes, and NPCs.
+- `ServerScriptService.Modules.RequestGate` bounds every current client-to-server entry point with per-player token buckets.
+- Profile writes are serialized, revision-checked, and retain failed leave saves for retry; malformed stored values fail closed.
+- Player and party update pushes are coalesced, party members save concurrently before teleport, and server-side teleport initialization failures cancel stale party-start state.
+- NPC config/controller lookup is cached and movement/attack controllers share short-lived target scans.
 - `ReplicatedStorage.Shared` owns shared config registries, 14 RemoteEvents, 6 RemoteFunctions, client weapon cache, and animation/VFX assets.
 - Client controllers under `StarterPlayerScripts` and `StarterGui` own input routing, HUD, locomotion animation, party/class/inventory UI, panel coordination, and responsive layout.
 - NPC templates are in `ServerStorage.Enemies`; live NPCs are parented to `Workspace.Enemies`.

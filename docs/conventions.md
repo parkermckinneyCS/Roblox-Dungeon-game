@@ -1,6 +1,6 @@
 # Project conventions and contracts
 
-These are implementation contracts verified in Studio on 2026-08-28. Some are legacy constraints rather than preferred naming.
+These are implementation contracts verified in Studio on 2026-08-31. Some are legacy constraints rather than preferred naming.
 
 ## Authority and state
 
@@ -9,6 +9,10 @@ These are implementation contracts verified in Studio on 2026-08-28. Some are le
 - Lobby and run use the same place and scripts. Determine mode from server-maintained state initialized from `Player:GetJoinData().TeleportData`, not from UI visibility.
 - Server state maps are keyed by `Player` objects and must be cleared on `Players.PlayerRemoving`.
 - Return fresh snapshots after successful request/response mutations; send update events for asynchronous changes.
+- Route every client-to-server entry point through `Modules.RequestGate` before building snapshots, refreshing parties, or rebuilding runtime objects.
+- Coalesce asynchronous player and party update events; do not broadcast unchanged state after a rejected mutation.
+- Serialize saves per profile and compare the stored `Meta.Revision` with the revision loaded by the session. A conflict must fail closed rather than overwrite.
+- Retain a saveable session when its leave-time write fails so it can be retried or reattached on same-server rejoin.
 
 ## Config-driven identifiers
 
@@ -82,3 +86,4 @@ For `WeaponType = "Daggers"`:
 - Project module `ServerScriptService.Modules.RunService` shadows Roblox's `RunService`; use `RobloxRunService` for the engine service when both appear in one script.
 - Prefer unique, identifier-safe instance names for new scripted content. Existing spaces, duplicate map names, and misspellings are legacy path constraints.
 - Keep test-only server scripts behind an explicit `RunService:IsStudio()` or private authorization guard; the current Workspace test tools violate this convention and are tracked as a problem.
+- Required authored server dependencies use direct references and fail immediately during bootstrap. Reserve `WaitForChild` for genuinely replicated or runtime-created instances; do not use an unbounded wait to hide a broken authored path.

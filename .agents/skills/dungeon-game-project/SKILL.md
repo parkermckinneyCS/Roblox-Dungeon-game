@@ -7,6 +7,8 @@ description: Work on the Dungeon Game Roblox project using its living knowledge 
 
 Start with `docs/knowledge/README.md` and read only the linked sections relevant to the request.
 
+When the user introduces a concrete project idea they want retained, follow `docs/project-prompt.md`: record or update a stable idea in `docs/knowledge/backlog.md`, keep it separate from verified current state, and move it through Proposed, Accepted, and Implemented only when the user and actual work justify those statuses.
+
 Before changing Roblox Studio, list connected Studio instances and select **Dungeon Game** (`placeId: 118646628582446`). Inspect its mode and the target hierarchy before editing. If multiple plausible instances exist, ask which one to use before mutation.
 
 Preserve the boundary between facts and plans:
@@ -18,5 +20,7 @@ Preserve the boundary between facts and plans:
 - Keep future ideas and unresolved work in `docs/knowledge/backlog.md`; do not describe them as implemented.
 
 After material work, update the smallest relevant knowledge files in the same change. Add or revise repository skills only when the work reveals a reusable procedure or non-obvious rule. Never store secrets, credentials, or guesses as project knowledge.
+
+Before finishing, perform a documentation-impact check across architecture, networking, instance paths, conventions, known problems, project snapshot, decisions, assets, backlog, and work log. Update only the documents affected by the task.
 
 For Studio changes, verify affected instances and relevant output. Playtest behavior changes in the appropriate DataModel, inspect console output, and return to Edit mode when finished unless asked otherwise.

@@ -1,5 +1,21 @@
 # Work log
 
+## 2026-08-31 — Backend persistence and workload hardening
+
+- Added `ServerScriptService.Modules.RequestGate` and applied per-player token buckets to all lobby, party, inventory, class, consumable, combat, sheath, and read remote entry points.
+- Serialized profile saves, added optimistic revision rejection, preserved dirty changes made during in-flight writes, rejected malformed stored values, preserved unknown class profiles, and made inventory/profile callback mutations transactional.
+- Retained failed leave saves for capped-backoff retry, shutdown flushing, or same-server reattachment instead of discarding the session.
+- Coalesced player and party updates, removed unused snapshot deep copies, avoided duplicate class runtime initialization, cached combat handlers and NPC config/controllers, and shared short-lived NPC target scans.
+- Saved party members concurrently before teleport, added `TeleportInitFailed` party recovery, preserved sheath state during gear refreshes, and replaced authored server dependency waits with fail-fast references outside the explicitly excluded test spawner.
+- Verified all ten changed Studio scripts with static Luau compilation in Edit mode. No playtest was run because the user explicitly excluded the enabled imported dynamic loader from this change; executing the place would still run that known script.
+
+## 2026-08-28 — Persistent idea and documentation workflow
+
+- Added `docs/project-prompt.md` as the reusable Codex project prompt.
+- Updated `AGENTS.md` and the `dungeon-game-project` skill so future tasks capture retained ideas with stable IDs and explicit statuses.
+- Converted the backlog into an idea registry, retained the Rojo and asset-mapping proposals, and recorded the architecture knowledge base as implemented.
+- Added the documentation-impact check and recorded the workflow as decision D-003.
+
 ## 2026-08-28 — Read-only Studio architecture audit
 
 - Inspected Dungeon Game (`placeId: 118646628582446`) through Roblox Studio MCP in Edit mode without changing the game or starting a playtest.

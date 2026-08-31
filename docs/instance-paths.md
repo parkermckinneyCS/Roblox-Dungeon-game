@@ -1,6 +1,6 @@
 # Important Studio instance paths
 
-Verified in the Edit DataModel on 2026-08-28. Paths omit the optional `game.` prefix.
+Verified in the Edit DataModel on 2026-08-31. Paths omit the optional `game.` prefix.
 
 ## Shared replicated contract
 
@@ -42,6 +42,7 @@ ServerScriptService
 │       └── Shared/Skills/Dash
 └── Modules
     ├── PlayerDataService
+    ├── RequestGate
     ├── PartyService
     ├── RunQueueService
     ├── RunService

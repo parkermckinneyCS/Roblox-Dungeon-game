@@ -5,6 +5,7 @@ This directory is the durable, Git-versioned memory for Dungeon Game. Read this 
 | File | Use it for |
 | --- | --- |
 | [`../README.md`](../README.md) | Technical knowledge index and future-agent start checklist |
+| [`../project-prompt.md`](../project-prompt.md) | Reusable Codex prompt and new-idea lifecycle |
 | [`../architecture.md`](../architecture.md) | Major systems, dependencies, state ownership, and lifecycle |
 | [`../networking.md`](../networking.md) | RemoteEvents, RemoteFunctions, bindables, callers, and handlers |
 | [`../instance-paths.md`](../instance-paths.md) | Important live Studio and runtime-created paths |
@@ -21,6 +22,7 @@ This directory is the durable, Git-versioned memory for Dungeon Game. Read this 
 
 - Prefer short, verified statements with paths or Studio instance names.
 - Treat the architecture documents one directory above as current-state references and update the affected document after Studio architecture changes.
+- Capture retained ideas in `backlog.md` using stable IDs and explicit statuses; never present a proposal as current behavior.
 - Update current-state documents rather than appending duplicate facts.
 - Append decisions and work-log entries chronologically; supersede decisions explicitly.
 - Separate confirmed facts from assumptions and future plans.

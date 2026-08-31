@@ -20,6 +20,17 @@ After material work, update project memory in the same change:
 
 Documentation-only exploration does not require a work-log entry. If a task makes no durable change, do not manufacture an update.
 
+## Capture new ideas and move them through the project
+
+- Follow the reusable workflow in `docs/project-prompt.md`.
+- When the user introduces a concrete Dungeon Game idea that they want retained, create or update a stable `IDEA-###` entry in `docs/knowledge/backlog.md` during the same task.
+- Default a newly retained idea to `Proposed`. Discussion is not acceptance, and acceptance is not implementation.
+- Do not persist casual examples, clearly discarded alternatives, secrets, credentials, or personal information.
+- When the user accepts a durable direction, update the idea and add a decision entry when the choice affects future implementation.
+- When an idea is implemented, verify the result, mark the idea `Implemented`, link the relevant decision or work-log entry, and update every affected current-state document.
+- Keep rejected and superseded ideas visible with their final status when the history remains useful.
+- Before finishing material work, perform a documentation-impact check. A behavior or architecture change with stale documentation is incomplete.
+
 ## Roblox Studio workflow
 
 - Inspect the current Studio state before edits.

@@ -10,6 +10,7 @@ The audit was performed through Roblox Studio MCP against the Edit DataModel. It
 
 | Document | Contents |
 | --- | --- |
+| [`project-prompt.md`](project-prompt.md) | Reusable Codex prompt and the idea-to-documentation lifecycle |
 | [`architecture.md`](architecture.md) | System boundaries, lifecycle, dependencies, and data ownership |
 | [`networking.md`](networking.md) | All project RemoteEvents, RemoteFunctions, bindables, callers, and handlers |
 | [`instance-paths.md`](instance-paths.md) | Important live Studio paths and runtime-created instances |
@@ -32,4 +33,5 @@ The audit was performed through Roblox Studio MCP against the Edit DataModel. It
 3. Confirm the Studio mode and re-inspect every path that will be changed; the live place may have moved ahead of this snapshot.
 4. Preserve the server-authoritative remote boundary and the identifier/path contracts in `conventions.md`.
 5. After material changes, update the smallest affected current-state document plus the work log and, when applicable, decisions or the asset catalog.
-6. Never record secrets, credentials, datastore contents, or unverified guesses in this knowledge base.
+6. Capture concrete user ideas with the lifecycle in `project-prompt.md`; never confuse a proposal with implemented state.
+7. Never record secrets, credentials, datastore contents, or unverified guesses in this knowledge base.

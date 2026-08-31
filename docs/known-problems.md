@@ -1,6 +1,6 @@
 # Known technical problems
 
-Verified by static Studio inspection on 2026-08-28. No fixes were made during this audit. “Confirmed” means the relevant source/path was observed; runtime impact was not playtested unless explicitly stated.
+Verified by static Studio inspection on 2026-08-31. “Confirmed” means the relevant source/path was observed; runtime impact was not playtested unless explicitly stated.
 
 ## Critical
 
@@ -34,11 +34,13 @@ Status: **Confirmed gameplay defect/design gap**
 
 Consequences include Warrior `MaxHealth +25`, Mage/Elf/wand max-mana bonuses, class/race base stats, weapon/armor stat bonuses, and armor defense having no effect. The inventory tooltip can display item stat modifiers even though combat does not apply them.
 
-### DG-004 — DataStore writes have no session lock or conflict check
+### DG-004 — DataStore uses optimistic conflict rejection without an exclusive session lock
 
-Status: **Confirmed production data-loss risk**
+Status: **Mitigated on 2026-08-31; destructive stale writes are rejected**
 
-`PlayerDataService.Save` uses `UpdateAsync`, but its callback ignores the stored value and always returns the local snapshot. `Meta.Revision` is incremented locally but never compared. Concurrent live sessions for one user can overwrite newer data. There is no session ownership/lock, lease expiry, or conflict resolution.
+`PlayerDataService.Save` now serializes writes for each in-server session and compares the stored `Meta.Revision` with the revision loaded by that session inside `UpdateAsync`. Stale sessions and malformed stored values are rejected instead of overwriting newer or recoverable data. Mutations made during a save remain dirty for a follow-up write, and failed leave saves are retained and retried.
+
+There is still no cross-server lease or exclusive ownership lock. If two live servers load the same revision, the first successful writer wins and the other session becomes non-saveable after its conflict is detected. This preserves stored data but requires a future reconnect/recovery experience if concurrent sessions are common.
 
 ### DG-005 — Run lifecycle stops at `Running`
 
@@ -50,9 +52,9 @@ The only observed run states are `WaitingForPlayers` and `Running`. There is no 
 
 ### DG-006 — Teleport failure recovery is incomplete
 
-Status: **Confirmed design gap**
+Status: **Resolved on 2026-08-31 for server-side party recovery**
 
-`RunQueueService` reserves a server and calls `TeleportAsync`, but no `TeleportInitFailed` listener or per-player recovery path exists. The start debounce is cleared after the call returns. Partial/client-side teleport failures can leave users without actionable UI recovery.
+`RunQueueService` now retains the start debounce after `TeleportAsync`, listens for `TeleportInitFailed`, clears affected member debounces, and asks `LobbyMain` to cancel and republish the party's starting state when that party still exists. A dedicated user-facing teleport error message is still not implemented.
 
 ### DG-007 — Party discovery is limited to one lobby server
 
@@ -86,9 +88,21 @@ The Q input fires local activation name `MobilitySkill`, but `AbilitiesHudContro
 
 ### DG-012 — Refreshing gear forcibly unsheathes the weapon
 
-Status: **Confirmed state bug**
+Status: **Resolved on 2026-08-31**
 
-`GearService.RegisterPlayerGear` sets `WeaponSheathed[player] = false`. `RunService.RefreshPlayerGear` calls it during gear refresh, so an unrelated inventory refresh can discard the current sheath state and rebuild the appearance as active.
+`RunService.RefreshPlayerGear` now requests sheath preservation. `GearService.RegisterPlayerGear` rebuilds the appearance and restores the previous sheath attachment without replaying the transition animation.
+
+### DG-017 — Remote requests could amplify server and network work
+
+Status: **Resolved on 2026-08-31**
+
+Lobby, inventory, class, party, combat, and read requests now use per-player token buckets in `Modules.RequestGate`. Failed party requests no longer broadcast lobby-wide snapshots, and successful data/party notifications are coalesced within a scheduler turn.
+
+### DG-018 — Failed leave saves were discarded
+
+Status: **Resolved on 2026-08-31**
+
+`SaveAndRemove` now retains a previously saveable session after a failed leave write, retries it with capped backoff, includes pending saves in shutdown flushing, and reattaches the session if the user rejoins the same server before retry completion.
 
 ## Low / maintainability
 

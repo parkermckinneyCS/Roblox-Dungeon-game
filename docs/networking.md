@@ -1,6 +1,6 @@
 # Networking contract
 
-Verified against `ReplicatedStorage.Shared.Remotes` on 2026-08-28. The project defines **14 RemoteEvents** and **6 RemoteFunctions**.
+Verified against `ReplicatedStorage.Shared.Remotes` on 2026-08-31. The project defines **14 RemoteEvents** and **6 RemoteFunctions**.
 
 ## Client-to-server RemoteEvents
 
@@ -77,3 +77,5 @@ The UI deliberately accepts both current fields and some legacy compatibility fi
 ## Trust boundary
 
 All remote arguments are untrusted. Existing gameplay mutations are server-side and the main handlers validate type, authority, class/loadout state, life state, inventory, mana, and cooldown as applicable. New remotes should follow the same pattern and must never accept client-supplied damage, rewards, inventory quantities, or final positions as authoritative values.
+
+All current client-to-server entry points also pass through per-player token buckets in `ServerScriptService.Modules.RequestGate`. Mutation requests rejected by the gate return no expensive snapshot, and failed party mutations do not trigger lobby-wide refreshes. Successful party refreshes and player/run data events are coalesced within a scheduler turn.

@@ -1,6 +1,6 @@
 # Architecture
 
-Verified against the live Studio place on 2026-08-28.
+Verified against the live Studio place on 2026-08-31.
 
 ## System overview
 
@@ -50,10 +50,15 @@ The project is a same-place lobby/run game. Lobby servers manage persistent prof
 - Key format: `Player_<UserId>`
 - Current schema: `GameDefaults.SchemaVersion = 8`
 - Retries: 3 attempts with a fixed 2-second retry delay
-- Autosave: every 120 seconds, coordinated by `LobbyMain`
+- Autosave: every 120 seconds, dispatched per player by `LobbyMain`
 - Shutdown: `BindToClose` starts saves and waits for at most 25 seconds
 - A failed load creates temporary data with `CanSave = false`, preventing accidental overwrite of stored data.
+- A malformed stored value also becomes non-saveable instead of being replaced with default data.
+- Saves are serialized per profile and use the loaded `Meta.Revision` as an optimistic concurrency check. A stale server is rejected rather than overwriting a newer revision.
+- Mutations made while a save is in flight leave the session dirty for a follow-up save.
+- Failed leave saves are retained in memory, retried with backoff, included in shutdown flushing, and reattached if the same user rejoins that server.
 - Normalization includes legacy character-slot migration into one profile per class.
+- Unknown class profiles are preserved if a matching config is temporarily unavailable.
 
 Persistent root shape:
 
@@ -80,7 +85,9 @@ Meta { Revision, CreatedAt, UpdatedAt }
 
 `LobbyMain` is the orchestration layer. `PartyService` stores parties in server memory, with a maximum of four members. Parties are indexed by leader and member, listed to all lobby players in that server, and have create/join/leave/kick/start operations.
 
-`RunQueueService` saves valid party members, calls `TeleportService:ReserveServer(game.PlaceId)`, and teleports the group back into the same place with run-mode teleport data. The teleport payload contains run identity, leader, start time, and a user-ID keyed class selection map.
+Client requests pass through `ServerScriptService.Modules.RequestGate`, which uses per-player token buckets. Party broadcasts are emitted only after successful mutations and are coalesced within a scheduler turn.
+
+`RunQueueService` saves valid party members concurrently, calls `TeleportService:ReserveServer(game.PlaceId)`, and teleports the group back into the same place with run-mode teleport data. The teleport payload contains run identity, leader, start time, and a user-ID keyed class selection map. `TeleportInitFailed` clears run-start debounces, cancels the affected party's starting state when it still exists, and republishes party data.
 
 ### Run state and resources
 
@@ -91,10 +98,13 @@ Meta { Revision, CreatedAt, UpdatedAt }
 - Builds a runtime snapshot containing selected class, class progression, skill slots, raw allocated stats, copied gear, health, mana, keys, and combat loadout.
 - Known run states are `WaitingForPlayers` and `Running`.
 - `ResourceService` owns mana construction, mutation, and a per-player regeneration task. Base mana is 100, regeneration is 3 every 1 second.
+- Player/run change notifications are coalesced before snapshots are sent, and change callbacks no longer build unused deep copies.
 
 ### Gear and loadouts
 
 `GearService` owns runtime gear state, class weapon restrictions, loose/equipped item swaps, sheath state, and change callbacks. `GearAppearanceService` clones weapon models from item config ModuleScripts into `Character.Weapons`, prepares their physics, and welds them to R6/R15 hands or torso.
+
+Gear refreshes preserve the current sheath state while rebuilding the runtime appearance.
 
 `CombatLoadoutService` derives:
 
@@ -119,6 +129,8 @@ Implemented combat handlers are Warrior sword M1, Mage projectile M1, Rogue dagg
 ### NPCs
 
 `NPCHandler` clones templates from `ServerStorage.Enemies`, loads matching configs from `ReplicatedStorage.Shared.Configs.Enemies`, gives NPC parts server network ownership, assigns the `Enemies` collision group, starts movement and attack controllers, and parents live NPCs to `Workspace.Enemies`.
+
+Enemy configs and controller modules are cached after bootstrap. Movement and attack controllers share a short-lived nearest-target cache so they do not independently rescan every player on the same NPC tick.
 
 Enemy config fields select modules by exact name:
 
@@ -162,6 +174,7 @@ The client sends intent and immediate press feedback only. The server owns damag
 ```text
 LobbyMain
   -> PlayerDataService -> GameDefaults, Classes, Races, Items, ExperienceProgression
+  -> RequestGate
   -> PartyService
   -> RunQueueService -> PlayerDataService, PartyService, TeleportService
   -> RunService -> GearService, CombatLoadoutService, ResourceService
