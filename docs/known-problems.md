@@ -104,6 +104,14 @@ Status: **Resolved on 2026-08-31**
 
 `SaveAndRemove` now retains a previously saveable session after a failed leave write, retries it with capped backoff, includes pending saves in shutdown flushing, and reattaches the session if the user rejoins the same server before retry completion.
 
+### DG-019 — Combat damage origins trusted client-influenced character physics
+
+Status: **Resolved on 2026-08-31 by server-side plausibility and attack validation**
+
+Player roots remain client-owned for responsive locomotion, but their instantaneous transforms are no longer used directly as damage origins. `CombatPositionService` continuously maintains an accepted transform using bounded horizontal/vertical movement, temporarily blocks combat after suspicious bursts, corrects large or repeated violations, and invalidates tokens when a character changes. `CombatInputMain` captures an attack token and `SkillRuntime` resolves it at the animation hit marker. Melee damage additionally requires attack-specific range, line of sight, and a target beneath `Workspace.Enemies`; projectiles originate from the resolved transform and are simulated by the server. Dash grants only a bounded, direction-constrained server movement allowance.
+
+Runtime thresholds still require multiplayer/high-latency calibration before release. No playtest was run while the explicitly excluded dynamic loader remains enabled.
+
 ## Low / maintainability
 
 ### DG-013 — Inventory UI creates one GUI clone per item unit

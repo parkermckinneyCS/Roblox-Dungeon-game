@@ -6,8 +6,8 @@ Verified against `ReplicatedStorage.Shared.Remotes` on 2026-08-31. The project d
 
 | Remote | Client producer | Arguments | Server owner and validation |
 | --- | --- | --- | --- |
-| `CombatM1` | Input action `CombatM1` | none | `CombatInputMain`; requires living player, initialized combat data, active allowed weapon, no M1 or sheath transition, and a valid `<ClassId>M1` handler |
-| `CombatSkill` | `CombatSkill1..4`, `MobilitySkill` | numeric slot 1-4, or global slot name; mobility also sends direction name and world direction | `CombatInputMain`; validates slot, loadout, class, weapon, life state, mana, concurrency, cooldown, and handler |
+| `CombatM1` | Input action `CombatM1` | none | `CombatInputMain`; requires living player, initialized combat data, active allowed weapon, no M1 or sheath transition, a valid `<ClassId>M1` handler, and an accepted server combat transform at request and hit-marker time |
+| `CombatSkill` | `CombatSkill1..4`, `MobilitySkill` | numeric slot 1-4, or global slot name; mobility also sends direction name and world direction | `CombatInputMain`; validates slot, loadout, class, weapon, life state, mana, concurrency, cooldown, handler, and attack transform. Dash direction is intent; server code fixes its speed/duration and authorizes only that bounded movement |
 | `ToggleWeaponSheath` | `ToggleWeaponSheath` input action | none | `CombatInputMain`; requires living player, equipped weapon, valid class, and no conflicting action/transition |
 | `UseConsumable` | `UseConsumable` input action | none | `LobbyMain`; validates cooldown, equipped reusable potion, restore type, and whether restoration is needed |
 | `CreateParty` | `LobbyJoinController` | none | `LobbyMain` delegates to `PartyService` |
@@ -79,3 +79,5 @@ The UI deliberately accepts both current fields and some legacy compatibility fi
 All remote arguments are untrusted. Existing gameplay mutations are server-side and the main handlers validate type, authority, class/loadout state, life state, inventory, mana, and cooldown as applicable. New remotes should follow the same pattern and must never accept client-supplied damage, rewards, inventory quantities, or final positions as authoritative values.
 
 All current client-to-server entry points also pass through per-player token buckets in `ServerScriptService.Modules.RequestGate`. Mutation requests rejected by the gate return no expensive snapshot, and failed party mutations do not trigger lobby-wide refreshes. Successful party refreshes and player/run data events are coalesced within a scheduler turn.
+
+Player character physics remain client-owned for responsive normal locomotion, so the live root transform is not itself a trusted damage origin. `CombatPositionService` continuously accepts only plausible movement, issues character-bound attack tokens, and revalidates them at the server animation marker. Hitbox and projectile code consumes the resolved transform, not a client-supplied position or weapon-part position. Client-selected aim or Dash direction remains intent only; damage origin, reach, obstruction, target eligibility, projectile simulation, movement magnitude, and movement duration are server-controlled.

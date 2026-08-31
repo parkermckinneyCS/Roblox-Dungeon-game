@@ -29,12 +29,16 @@ Renaming a config module is a data migration and code/path change, not a cosmeti
 
 ## Combat handler layout
 
-- M1 module: `CombatInputMain.Classes.<ClassId>.<ClassId>M1`, returning `module.fire(player)`.
+- M1 module: `CombatInputMain.Classes.<ClassId>.<ClassId>M1`, returning `module.fire(player, executionContext)`.
 - Skill module: `CombatInputMain.Classes.<SkillConfig.Class>.Skills.<SkillId>`, returning `module.fire(player, balance, context)`.
 - `SkillConfig.Class` must equal a class ID or `Shared`.
 - Numeric skills are `Slot1` through `Slot4`; global slots use string names such as `Mobility`.
-- `CombatInputMain` treats any skill return value except literal `false` as accepted, then deducts mana and starts cooldown.
+- `CombatInputMain` accepts a skill result unless it is literal `false` or a table with `Success = false`; only accepted results deduct mana and start cooldown.
 - Do not rely on `CombatLoadout.M1` yet: it reads optional `itemConfig.M1Skill`, while live M1 dispatch and the equipped-weapon payload derive `<ClassId>M1` independently.
+- `CombatInputMain` creates a character-bound attack token before dispatch. M1 handlers receive it as `executionContext.AttackToken`; skill handlers receive it in their existing context.
+- Animation-driven attacks pass that token to `SkillRuntime.PlayAtHit` and build damage geometry from `marker.AttackCFrame` / `marker.AttackPosition`, never directly from the live root or a weapon part.
+- Player attack queries require `Workspace.Enemies` as their target container. Melee attacks also declare a server-owned maximum range and line-of-sight requirement.
+- Client vectors may express aim or movement intent only. Server code owns projectile origin/speed/lifetime and movement-ability magnitude/duration; server-authorized movement must be registered with `CombatPositionService`.
 
 ## Animation and VFX layout
 

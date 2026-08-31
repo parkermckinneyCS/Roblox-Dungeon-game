@@ -39,3 +39,11 @@
 - Decision: Apply per-player token buckets to every client-to-server entry point, coalesce asynchronous snapshots, and broadcast party state only after successful mutations.
 - Reason: Validation alone does not prevent exploiters from repeatedly triggering deep copies, model rebuilds, player scans, or lobby-wide network fanout.
 - Consequences: Rate-limited mutation calls return a lightweight rejection, read calls may return `nil` when over budget, and new remotes must define an explicit request-gate policy.
+
+## D-006 — Validate combat transforms without server-owning normal locomotion
+
+- Date: 2026-08-31
+- Status: Accepted
+- Decision: Keep normal character locomotion client-owned for responsiveness, but accept combat origins only through continuously bounded server movement state and character-bound attack tokens that are resolved again at hit-marker time. Require authoritative enemy membership, reach, and obstruction checks before player damage.
+- Reason: Reading the server's current player root is insufficient because the client owns its physics, while making every player character server-owned would materially degrade ordinary movement latency.
+- Consequences: Suspicious movement rejects combat and severe/repeated violations are corrected; Dash and future server-approved movement must register explicit bounded allowances; runtime thresholds need multiplayer and latency calibration before release.

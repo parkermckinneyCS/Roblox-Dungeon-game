@@ -116,6 +116,12 @@ Gear refreshes preserve the current sheath state while rebuilding the runtime ap
 
 `CombatInputMain` is the authoritative network gate. It rejects invalid slot references, dead players, missing/invalid weapons, class mismatches, insufficient mana, active transitions, concurrent skills, and server cooldown violations.
 
+`ServerScriptService.Modules.CombatPositionService` samples living player roots every 0.1 seconds and maintains the latest accepted combat transform. Horizontal, upward, and downward travel use separate server-side movement budgets. Non-finite or implausible movement blocks combat; large or repeated violations temporarily move the character back to the last accepted root transform under server network ownership. Character replacement invalidates outstanding attack tokens.
+
+Every M1 and skill receives an opaque attack token captured from an accepted transform. `SkillRuntime` resolves that token again at the animation `Hit` marker, so movement during windup must remain plausible and within a bounded horizontal startup envelope. Melee hitboxes use the resolved transform, enforce per-attack range and line of sight, and damage only Humanoids beneath `Workspace.Enemies`. Mage projectiles launch from an authored offset relative to the resolved transform rather than a character weapon part. Invalid spatial validation returns failure before mana or cooldown is committed.
+
+Dash remains camera/movement-direction responsive, but the client direction is only intent. The server fixes speed and duration and registers one bounded, direction-constrained movement allowance with `CombatPositionService`; combat remains blocked for that short movement window.
+
 Runtime dispatch is convention-based:
 
 - M1: `CombatInputMain.Classes.<ClassId>.<ClassId>M1`
@@ -180,8 +186,8 @@ LobbyMain
   -> RunService -> GearService, CombatLoadoutService, ResourceService
 
 CombatInputMain
-  -> RunService, GearService, Items, Skills
-  -> class M1/skill handlers -> SkillRuntime, HitboxService
+  -> RunService, GearService, Items, Skills, CombatPositionService
+  -> class M1/skill handlers -> SkillRuntime, HitboxService, CombatPositionService
 
 GearService
   -> Items, Classes

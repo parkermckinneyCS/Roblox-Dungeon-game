@@ -24,6 +24,15 @@ This is the durable home for proposed, accepted, in-progress, blocked, rejected,
 
 ## Completed foundations
 
+### IDEA-004 — Server-validated combat positions
+
+- Introduced: 2026-08-31
+- Status: Implemented
+- Intent: Prevent client-influenced character physics from becoming an authoritative melee or projectile damage origin while preserving responsive normal movement and existing combat controls.
+- Affected areas: `CombatInputMain`, `CombatPositionService`, `SkillRuntime`, `HitboxService`, all current player attack handlers, and Dash.
+- Open questions: Calibrate movement and correction thresholds with multiplayer/high-latency runtime tests after the excluded dynamic loader can be removed or safely disabled.
+- Links: `docs/knowledge/decisions.md` (D-006), `docs/knowledge/work-log.md`
+
 ### IDEA-003 — Persistent Studio architecture knowledge base
 
 - Introduced: 2026-08-28

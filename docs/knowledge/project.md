@@ -27,6 +27,8 @@ Last verified: 2026-08-31
 - `ServerScriptService.CombatInputMain` is the server-authoritative combat/sheath remote gateway.
 - Server modules own player data, parties, run state, teleport queueing, mana, gear/appearance, combat loadouts, skills/hitboxes, and NPCs.
 - `ServerScriptService.Modules.RequestGate` bounds every current client-to-server entry point with per-player token buckets.
+- `ServerScriptService.Modules.CombatPositionService` maintains accepted player transforms, issues character-bound attack tokens, revalidates them at hit-marker time, and bounds server-authorized Dash movement.
+- Player melee attacks enforce per-attack reach, line of sight, and `Workspace.Enemies` membership. Mage projectiles originate from validated attack transforms rather than character weapon physics.
 - Profile writes are serialized, revision-checked, and retain failed leave saves for retry; malformed stored values fail closed.
 - Player and party update pushes are coalesced, party members save concurrently before teleport, and server-side teleport initialization failures cancel stale party-start state.
 - NPC config/controller lookup is cached and movement/attack controllers share short-lived target scans.

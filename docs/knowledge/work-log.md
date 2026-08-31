@@ -1,5 +1,14 @@
 # Work log
 
+## 2026-08-31 — Server-validated combat positions
+
+- Added `ServerScriptService.Modules.CombatPositionService` with 0.1-second root sampling, finite-transform checks, separate movement budgets, temporary combat blocking, rate-limited diagnostics, severe/repeated movement correction, character generations, attack tokens, marker-time resolution, and directional movement allowances.
+- Routed all M1 and skill dispatch through accepted attack tokens; invalid spatial resolution now fails without committing skill mana or cooldown.
+- Replaced live-root and weapon-handle damage origins in Warrior, Rogue, Mage, Power Strike, and Wind Slice with validated attack transforms.
+- Added centralized enemy-container, per-attack range, and line-of-sight validation to player hitboxes; server-stepped projectiles now damage only authorized enemies.
+- Registered Dash's server-fixed speed/duration as its only bounded directional movement allowance and blocked combat during the brief Dash window.
+- Verified the ten changed/new Studio scripts and all 25 `ServerScriptService` Lua sources with static compilation in Edit mode. Audited player attack call sites for live-root/handle origins and authoritative target constraints. An isolated Edit-mode hitbox check confirmed an authorized enemy hit while a wall-blocked target and an out-of-container Humanoid were rejected. No playtest was run because the explicitly excluded enabled dynamic loader would execute with the place.
+
 ## 2026-08-31 — Backend persistence and workload hardening
 
 - Added `ServerScriptService.Modules.RequestGate` and applied per-player token buckets to all lobby, party, inventory, class, consumable, combat, sheath, and read remote entry points.
